@@ -14,6 +14,10 @@ def not_found(message):
     response.status_code = 404
     return response
 
+def ticket_closed(ticket_id):
+    response = jsonify({'error': 'ticket closed', 'ticket_id': ticket_id})
+    response.status_code = 400
+    return response
 
 @api.errorhandler(ValidationError)
 def validation_error(e):

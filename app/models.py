@@ -2,6 +2,7 @@ from urllib import parse
 import psycopg2
 from flask import json
 
+
 from app.exceptions import ModelNotFound, ValidationError
 from app.querys import CREATE_DATABASE, CREATE_TABLE_TICKETS, CREATE_TABLE_COMMENTS, DROP_DATABASE, \
     ADD_TICKET, ADD_COMMENT, SELECT_TICKET, SELECT_COMMENTS, SAVE_TICKET, CREATE_USER, SELECT_COMMENT, \
@@ -18,18 +19,22 @@ class DB(object):
             self.connect = psycopg2.connect(db)
         except psycopg2.OperationalError as e:
             print(e)
-            print(f'Для создания пользователя используйте комманду:\n{CREATE_USER}')
-            print(f'Для создания базы данных используйте комманду:\n{CREATE_DATABASE}')
+            print('Для создания пользователя используйте комманду:\n{}'.format(CREATE_USER))
+            print('Для создания базы данных используйте комманду:\n{}'.format(CREATE_DATABASE))
             exit()
 
     def close(self):
         self.connect.close()
 
-    def execute(self, query):
+    def execute(self, query, params=None):
+        if not params:
+            params = {}
         # print(query)
         try:
+            print(query)
+            print(params)
             cursor = self.connect.cursor()
-            cursor.execute(query)
+            cursor.execute(query, params)
         except psycopg2.ProgrammingError as e:
             print(e)
             self.connect.close()
@@ -46,28 +51,28 @@ class DB(object):
         self.execute(DROP_DATABASE)
         self.connect.commit()
 
-    def fetch_one(self, query):
-        cursor = self.execute(query)
+    def fetch_one(self, query, params=None):
+        cursor = self.execute(query, params)
         return cursor.fetchone()
 
-    def fetch_all(self, query):
-        cursor = self.execute(query)
+    def fetch_all(self, query, params=None):
+        cursor = self.execute(query, params)
         return cursor.fetchall()
 
     def add_ticket(self, ticket):
-        self.execute(ADD_TICKET.format(**ticket.get_attrs()))
+        self.execute(ADD_TICKET, ticket.get_attrs())
         ticket.id, ticket.created_at = self.fetch_one(GET_LAST_TICKET_ID)
         return ticket
 
     def save_ticket(self, ticket):
         if not ticket.id:
             raise Exception('Can\'t save ticket without id')
-        self.execute(SAVE_TICKET.format(**ticket.get_attrs()))
-        ticket.updated_at = self.fetch_one(GET_TICKET_LAST_UPDATE.format(ticket.id))
+        self.execute(SAVE_TICKET, ticket.get_attrs())
+        ticket.updated_at = self.fetch_one(GET_TICKET_LAST_UPDATE, {'id': ticket.id})
         return ticket
 
     def get_ticket(self, id):
-        return self.fetch_one(SELECT_TICKET.format(id))
+        return self.fetch_one(SELECT_TICKET, {'id': id})
 
     def get_tickets(self):
         for item in self.fetch_all(SELECT_TICKETS):
@@ -77,36 +82,42 @@ class DB(object):
         return self.fetch_one(SELECT_TICKETS_COUNT)[0]
 
     def change_state(self, ticket):
-        self.execute(SAVE_TICKET.format(**ticket.get_attrs))
+        self.execute(SAVE_TICKET, ticket.get_attrs())
 
     def add_comment(self, comment):
-        self.execute(ADD_COMMENT.format(**comment.get_attrs()))
+        self.execute(ADD_COMMENT, comment.get_attrs())
         comment.id, comment.created_at = self.fetch_one(GET_LAST_COMMENT_ID)
         return comment
 
     def get_comment(self, id):
-        return self.fetch_one(SELECT_COMMENT.format(id))
+        return self.fetch_one(SELECT_COMMENT, {'id': id})
 
     def get_comments(self, ticket_id=None):
-        for item in self.fetch_all(
-                SELECT_TICKET_COMMENTS.format(ticket_id) if ticket_id else SELECT_COMMENTS
-                ):
-            yield Comment.from_db(item)
+        if ticket_id:
+            for item in self.fetch_all(SELECT_TICKET_COMMENTS, {'ticket_id': ticket_id}):
+                yield Comment.from_db(item)
+        else:
+            for item in self.fetch_all(SELECT_COMMENTS):
+                yield Comment.from_db(item)
 
     def get_comments_count(self, ticket_id=None):
-        return self.fetch_one(
-            SELECT_TICKET_COMMENTS_COUNT.format(ticket_id) if ticket_id else SELECT_COMMENTS_COUNT
-        )[0]
+        if ticket_id:
+            return self.fetch_one(SELECT_TICKET_COMMENTS_COUNT, {'ticket_id':ticket_id})[0]
+        else:
+            return self.fetch_one(SELECT_COMMENTS_COUNT)[0]
 
     def delete_comment(self, id):
-        return self.execute(DELETE_COMMENT.format(id))
+        return self.execute(DELETE_COMMENT, {'id':id})
 
     def delete_comments(self, ticket_id=None):
-        return self.execute(DELETE_TICKET_COMMENTS.format(ticket_id) if ticket_id else DELETE_COMMENTS)
+        if ticket_id:
+            return self.execute(DELETE_TICKET_COMMENTS, {'ticket_id':ticket_id})
+        else:
+            return self.execute(DELETE_COMMENTS)
 
     def delete_ticket(self, id):
         self.delete_comments(ticket_id=id)
-        return self.execute(DELETE_TICKET.format(id))
+        return self.execute(DELETE_TICKET, {'id':id})
 
     def delete_tickets(self):
         return self.execute(DELETE_TICKETS)
@@ -156,7 +167,7 @@ class Ticket(Base):
         else:
             raise ValidationError('Заполните тему')
         self.updated_at = updated_at
-        self.state = state
+        self.state = state or TicketState.OPEN
 
     def get_state(self):
         return TicketState.string_state(self.state)
@@ -175,7 +186,7 @@ class Ticket(Base):
         attrs.update({
             'subject': self.subject,
             'updated_at': self.updated_at,
-            'state': TicketState.string_state(self.state) if to_json else self.state
+            'state': TicketState.string_state(self.state) if to_json else int(self.state)
         })
         return attrs
 

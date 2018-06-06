@@ -43,7 +43,7 @@ DROP DATABASE IF EXISTS {};
 '''.format(Config.DATABASE_NAME)
 
 ADD_TICKET = '''
-INSERT INTO tickets(subject, message, email) values ('{subject}', '{message}', '{email}');
+INSERT INTO tickets(subject, message, email) values (%(subject)s, %(message)s, %(email)s);
 '''
 
 GET_LAST_TICKET_ID = '''
@@ -51,15 +51,15 @@ SELECT id, created_at FROM tickets WHERE id = (SELECT LASTVAL());
 '''
 
 SAVE_TICKET = '''
-UPDATE tickets SET subject='{subject}', message='{message}', email='{email}', state={state}, updated_at=NOW() WHERE id={id};
+UPDATE tickets SET subject=%(subject)s, message=%(message)s, email=%(email)s, state=%(state)s, updated_at=NOW() WHERE id=%(id)s;
 '''
 
 GET_TICKET_LAST_UPDATE = '''
-SELECT updated_at FROM tickets WHERE id={};
+SELECT updated_at FROM tickets WHERE id=%(id)s;
 '''
 
 ADD_COMMENT = '''
-INSERT INTO comments(ticket_id, email, message) values ({ticket_id}, '{email}', '{message}');
+INSERT INTO comments(ticket_id, email, message) values (%(ticket_id)s, %(email)s, %(message)s);
 '''
 
 GET_LAST_COMMENT_ID = '''
@@ -67,7 +67,7 @@ SELECT id, created_at FROM comments WHERE id = (SELECT LASTVAL());
 '''
 
 DELETE_COMMENT = '''
-DELETE FROM comments WHERE id={};
+DELETE FROM comments WHERE id=%(id)s;
 '''
 
 DELETE_COMMENTS = '''
@@ -75,7 +75,7 @@ DELETE FROM comments;
 '''
 
 DELETE_TICKET = '''
-DELETE FROM tickets WHERE id={};
+DELETE FROM tickets WHERE id=%(id)s;
 '''
 
 DELETE_TICKETS = '''
@@ -83,7 +83,7 @@ DELETE FROM tickets;
 '''
 
 SELECT_TICKET = '''
-SELECT message, email, subject, created_at, state, updated_at, id FROM tickets WHERE id={};
+SELECT message, email, subject, created_at, state, updated_at, id FROM tickets WHERE id=%(id)s;
 '''
 
 SELECT_TICKETS = '''
@@ -95,15 +95,15 @@ SELECT COUNT(id) FROM tickets;
 '''
 
 SELECT_COMMENT = '''
-SELECT message, email, ticket_id, created_at, id FROM comments WHERE id={};
+SELECT message, email, ticket_id, created_at, id FROM comments WHERE id=%(id)s;
 '''
 
 SELECT_TICKET_COMMENTS = '''
-SELECT message, email, ticket_id, created_at, id FROM comments WHERE ticket_id={};
+SELECT message, email, ticket_id, created_at, id FROM comments WHERE ticket_id=%(ticket_id)s;
 '''
 
 DELETE_TICKET_COMMENTS = '''
-DELETE FROM comments WHERE ticket_id={};
+DELETE FROM comments WHERE ticket_id=%(ticket_id)s;
 '''
 
 SELECT_COMMENTS = '''
@@ -111,7 +111,7 @@ SELECT message, email, ticket_id, created_at, id FROM comments;
 '''
 
 SELECT_TICKET_COMMENTS_COUNT = '''
-SELECT COUNT(id) FROM comments WHERE ticket_id={};
+SELECT COUNT(id) FROM comments WHERE ticket_id=%(ticket_id)s;
 '''
 
 SELECT_COMMENTS_COUNT = '''

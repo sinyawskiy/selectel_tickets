@@ -1,7 +1,7 @@
 from flask import jsonify, request, g, url_for
-from app.api_1_0.errors import not_found
+from app.api_1_0.errors import not_found, ticket_closed
 from app.exceptions import ModelNotFound
-from app.models import Comment
+from app.models import Comment, Ticket, TicketState
 from . import api
 
 
@@ -33,6 +33,14 @@ def get_ticket_comments(id):
 
 @api.route('/tickets/<int:id>/comments/', methods=['POST'])
 def new_ticket_comment(id):
-    comment = Comment.from_json(request.get_json(), ticket_id=id)
-    g.db.add_comment(comment)
-    return jsonify(comment.get_attrs()), 201, {'Location': url_for('api.get_comment', id=comment.id, _external=True)}
+    try:
+        ticket = Ticket.from_db(g.db.get_ticket(id))
+    except ModelNotFound as e:
+        return not_found(str(e))
+    else:
+        if ticket.state == TicketState.CLOSED:
+            return ticket_closed(ticket_id=id)
+        else:
+            comment = Comment.from_json(request.get_json(), ticket_id=id)
+            g.db.add_comment(comment)
+            return jsonify(comment.get_attrs()), 201, {'Location': url_for('api.get_comment', id=comment.id, _external=True)}
