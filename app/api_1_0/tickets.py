@@ -1,11 +1,13 @@
 from flask import jsonify, request, g, url_for
+from app.crossdomain import crossdomain
 from app.api_1_0.errors import not_found, bad_request
 from app.exceptions import ModelNotFound, ValidationError
 from ..models import Ticket, TicketState
 from . import api
 
 
-@api.route('/tickets/')
+@api.route('/tickets/', methods=['GET', 'OPTIONS'])
+@crossdomain(origin="*", headers=['Content-Type'])
 def get_tickets():
     return jsonify({
         'tickets': [ticket.get_attrs(True) for ticket in g.db.get_tickets()],
@@ -14,6 +16,7 @@ def get_tickets():
 
 
 @api.route('/tickets/', methods=['POST'])
+@crossdomain(origin="*", headers=['Content-Type'])
 def new_ticket():
     # TODO: in postman use raw request with
     # header Content-Type application/json
@@ -27,7 +30,8 @@ def new_ticket():
     return jsonify(ticket.get_attrs(True)), 201, {'Location': url_for('api.get_ticket', id=ticket.id, _external=True)}
 
 
-@api.route('/tickets/<int:id>')
+@api.route('/tickets/<int:id>', methods=['GET', 'OPTIONS'])
+@crossdomain(origin="*", headers=['Content-Type'])
 def get_ticket(id):
     try:
         ticket = Ticket.from_db(g.db.get_ticket(id))
@@ -41,7 +45,8 @@ def get_ticket(id):
     return jsonify(ticket_attrs)
 
 
-@api.route('/tickets/<int:id>/close/', methods=['PUT'])
+@api.route('/tickets/<int:id>/close/', methods=['PUT', 'OPTIONS'])
+@crossdomain(origin="*", headers=['Content-Type'])
 def close(id):
     ticket = Ticket.from_db(g.db.get_ticket(id))
     ticket.update_state(force_close=True)
@@ -49,7 +54,8 @@ def close(id):
     return jsonify(ticket.get_attrs(True)), 201, {'Location': url_for('api.get_ticket', id=ticket.id, _external=True)}
 
 
-@api.route('/tickets/<int:id>/next_state/', methods=['PUT'])
+@api.route('/tickets/<int:id>/next_state/', methods=['PUT', 'OPTIONS'])
+@crossdomain(origin="*", headers=['Content-Type'])
 def set_state(id):
     ticket = Ticket.from_db(g.db.get_ticket(id))
     ticket.update_state()
