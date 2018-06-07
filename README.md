@@ -140,3 +140,27 @@ npm i
 ```
 npm run  server
 ```
+
+Скриншоты
+=========
+
+Создание нового тикета
+![Создание нового тикета](https://github.com/sinyawskiy/selectel_tickets/blob/master/img/1.png?raw=true)
+
+Создание нового тикета
+![Просмотр тикета](https://github.com/sinyawskiy/selectel_tickets/blob/master/img/2.png?raw=true)
+
+Создание нового тикета
+![Добавление комментария](https://github.com/sinyawskiy/selectel_tickets/blob/master/img/3.png?raw=true)
+
+Список всех тикетов
+![Список всех тикетов](https://github.com/sinyawskiy/selectel_tickets/blob/master/img/4.png?raw=true)
+
+Рассмотрите кандидатуру
+![Рассмотрите кандидатуру](https://github.com/sinyawskiy/selectel_tickets/blob/master/img/5.png?raw=true)
+
+
+
+
+
+
