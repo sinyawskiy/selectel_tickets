@@ -1,23 +1,45 @@
 import React from 'react';
 import createClass from'create-react-class';
-import api from '../api';
+import AppStore from '../stores/AppStore';
+import AppActions from '../actions/AppActions';
+
+function getStateFromFlux() {
+    return {
+        tickets: AppStore.getTicketsList()
+    };
+};
 
 const Tickets = createClass({
     getInitialState: function() {
+        let tickets = getStateFromFlux();
         return {
-            tickets: [],
+            tickets,
             showDialog: false,
             descriptionId: undefined
         };
     },
-    componentDidMount: function(){
-        console.log(api.getTickets());
+
+    componentWillMount() {
+        AppActions.getTickets();
     },
+
+    componentDidMount() {
+        AppStore.addChangeListener(this._onChange);
+    },
+
+    componentWillUnmount() {
+        AppStore.removeChangeListener(this._onChange);
+    },
+
     render: function() {
         return (
             <div>
             </div>
         );
+    },
+
+    _onChange() {
+        this.setState(getStateFromFlux());
     }
 });
 

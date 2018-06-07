@@ -11,6 +11,13 @@ import ListItem from "@material-ui/core/es/ListItem/ListItem";
 import ListItemText from "@material-ui/core/es/ListItemText/ListItemText";
 import ListItemSecondaryAction from "@material-ui/core/es/ListItemSecondaryAction/ListItemSecondaryAction";
 import List from "@material-ui/core/es/List/List";
+import AppStore from '../stores/AppStore';
+
+function getStateFromFlux() {
+    return {
+        ticketsList: AppStore.getTicketsLists()
+    };
+}
 
 const Ticket = createClass({
     contextTypes: {
