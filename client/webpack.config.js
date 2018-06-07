@@ -24,7 +24,7 @@ module.exports = {
 					{
 						loader: 'babel-loader',
 						options: {
-							presets: ['react', 'es2015'],
+							presets: ['react', 'es2016'],
 							plugins: ['react-hot-loader/babel']
 						}
 					}

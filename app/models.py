@@ -1,5 +1,6 @@
 from urllib import parse
 import psycopg2
+import time
 from flask import json
 
 
@@ -181,12 +182,14 @@ class Ticket(Base):
             raise ModelNotFound('Тикет не найден')
         return cls(*cls_tuple)
 
-    def get_attrs(self, to_json=False):
+    def get_attrs(self):
         attrs = super(Ticket, self).get_attrs()
         attrs.update({
             'subject': self.subject,
             'updated_at': self.updated_at,
-            'state': TicketState.string_state(self.state) if to_json else int(self.state)
+            'state': int(self.state),
+            'state_str': TicketState.string_state(self.state),
+            'timestamp': time.mktime(self.created_at.timetuple()) if self.created_at else 0
         })
         return attrs
 
@@ -209,7 +212,8 @@ class Comment(Base):
     def get_attrs(self):
         attrs = super(Comment, self).get_attrs()
         attrs.update({
-            'ticket_id': self.ticket_id
+            'ticket_id': self.ticket_id,
+            'timestamp': time.mktime(self.created_at.timetuple()) if self.created_at else 0
         })
         return attrs
 

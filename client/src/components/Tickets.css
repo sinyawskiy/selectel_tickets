@@ -1,0 +1,25 @@
+.tickets-column {
+    float: left;
+    width: 25%;
+}
+
+/* Clear floats after the columns */
+.tickets-row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.tickets-column-item--header{
+    text-align: center;
+}
+
+.add-ticket-button{
+    float: right;
+}
+
+@media screen and (max-width: 600px) {
+    .tickets-column {
+        width: 100%;
+    }
+}

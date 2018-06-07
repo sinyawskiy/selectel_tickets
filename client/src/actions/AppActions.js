@@ -98,13 +98,13 @@ const AppActions = {
         api.closeTicket(params.id)
             .then(data => {
                 AppDispatcher.dispatch({
-                    type : AppConstants.GET_TICKET_COMMENTS_SUCCESS,
+                    type : AppConstants.CLOSE_TICKET_SUCCESS,
                     item : data
                 });
             })
             .catch(err => {
                 AppDispatcher.dispatch({
-                    type  : AppConstants.GET_TICKET_COMMENTS_FAIL,
+                    type  : AppConstants.CLOSE_TICKET_FAIL,
                     error : err
                 });
             });

@@ -10,7 +10,7 @@ from . import api
 @crossdomain(origin="*", headers=['Content-Type'])
 def get_tickets():
     return jsonify({
-        'tickets': [ticket.get_attrs(True) for ticket in g.db.get_tickets()],
+        'tickets': [ticket.get_attrs() for ticket in g.db.get_tickets()],
         'count': g.db.get_tickets_count()
     })
 
@@ -27,7 +27,7 @@ def new_ticket():
         return bad_request(str(e))
     else:
         g.db.add_ticket(ticket)
-    return jsonify(ticket.get_attrs(True)), 201, {'Location': url_for('api.get_ticket', id=ticket.id, _external=True)}
+    return jsonify(ticket.get_attrs()), 201, {'Location': url_for('api.get_ticket', id=ticket.id, _external=True)}
 
 
 @api.route('/tickets/<int:id>', methods=['GET', 'OPTIONS'])
@@ -38,7 +38,7 @@ def get_ticket(id):
     except ModelNotFound as e:
         return not_found(str(e))
 
-    ticket_attrs = ticket.get_attrs(True)
+    ticket_attrs = ticket.get_attrs()
     ticket_attrs.update({
         'comments':  [comment.get_attrs() for comment in g.db.get_comments(id)]
     })
@@ -51,7 +51,7 @@ def close(id):
     ticket = Ticket.from_db(g.db.get_ticket(id))
     ticket.update_state(force_close=True)
     g.db.save_ticket(ticket)
-    return jsonify(ticket.get_attrs(True)), 201, {'Location': url_for('api.get_ticket', id=ticket.id, _external=True)}
+    return jsonify(ticket.get_attrs()), 201, {'Location': url_for('api.get_ticket', id=ticket.id, _external=True)}
 
 
 @api.route('/tickets/<int:id>/next_state/', methods=['PUT', 'OPTIONS'])
@@ -62,7 +62,7 @@ def set_state(id):
     ticket = g.db.save_ticket(ticket)
     return jsonify(
         {
-            'ticket': ticket.get_attrs(True),
+            'ticket': ticket.get_attrs(),
             'next_state': TicketState.string_state(TicketState.get_next_state(ticket.state))
         },
         201,

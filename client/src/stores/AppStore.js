@@ -27,24 +27,57 @@ AppDispatcher.register(action => {
        case AppConstants.GET_TICKETS_SUCCESS: {
             _ticketsList = action.items;
             AppStore.emitChange();
+            break;
        }
        case AppConstants.GET_TICKETS_FAIL: {
            _ticketsList = [];
            _error = action.error;
            AppStore.emitChange();
+           break;
        }
-       case AppConstants.GET_TICKET_SUCCESS: {}
-       case AppConstants.GET_TICKET_FAIL: {}
-       case AppConstants.ADD_TICKET_SUCCESS: {}
-       case AppConstants.ADD_TICKET_FAIL: {}
-       case AppConstants.ADD_COMMENT_SUCCESS: {}
-       case AppConstants.ADD_COMMENT_FAIL: {}
-       case AppConstants.GET_TICKET_COMMENTS_SUCCESS: {}
-       case AppConstants.GET_TICKET_COMMENTS_FAIL: {}
-       case AppConstants.CHANGE_TICKET_STATE_SUCCESS: {}
-       case AppConstants.CHANGE_TICKET_STATE_FAIL: {}
-       case AppConstants.CLOSE_TICKET_SUCCESS: {}
-       case AppConstants.CLOSE_TICKET_FAIL: {}
+       case AppConstants.GET_TICKET_SUCCESS: {
+           break;
+       }
+       case AppConstants.GET_TICKET_FAIL: {
+           break;
+       }
+       case AppConstants.ADD_TICKET_SUCCESS: {
+           _ticketsList.push(action.item);
+           AppStore.emitChange();
+           break;
+       }
+       case AppConstants.ADD_TICKET_FAIL: {
+           break;
+       }
+       case AppConstants.ADD_COMMENT_SUCCESS: {
+           break;
+       }
+       case AppConstants.ADD_COMMENT_FAIL: {
+           break;
+       }
+       case AppConstants.GET_TICKET_COMMENTS_SUCCESS: {
+           break;
+       }
+       case AppConstants.GET_TICKET_COMMENTS_FAIL: {
+           break;
+       }
+       case AppConstants.CHANGE_TICKET_STATE_SUCCESS: {
+           break;
+       }
+       case AppConstants.CHANGE_TICKET_STATE_FAIL: {
+           break;
+       }
+       case AppConstants.CLOSE_TICKET_SUCCESS: {
+           let ticket = action.item;
+           console.log(ticket);
+           _ticketsList.find(x => x.id === ticket.id).state = ticket.state;
+           AppStore.emitChange();
+           break;
+       }
+       case AppConstants.CLOSE_TICKET_FAIL: {
+
+           break;
+       }
        default: {
        }
    }

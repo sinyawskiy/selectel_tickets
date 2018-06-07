@@ -12,11 +12,9 @@ class APITestCase(unittest.TestCase):
 
     def tearDown(self):
         db = DB(self.app.config['DATABASE_URI'])
-        db.delete_comments()
-        db.delete_tickets()
+        # db.delete_comments()
+        # db.delete_tickets()
         self.app_context.pop()
-        db.delete_comments()
-        db.delete_tickets()
 
     def test_tickets(self):
         response = self.client.post(
@@ -84,4 +82,15 @@ class APITestCase(unittest.TestCase):
         # test ticket close
         response = self.client.put(url_for('api.close', id=ticket_id))
         json_response = json.loads(response.data.decode('utf-8'))
-        self.assertEqual(json_response['state'], 'закрыт')
+        self.assertEqual(json_response['state_str'], 'закрыт')
+
+    def test_new_tickets(self):
+        for _i in range(30):
+        # write a ticket
+            response = self.client.post(
+                url_for('api.new_ticket'),
+                data=json.dumps({"message": "test_message", "subject": "test_subject", "email": "test_email"}),
+                content_type='application/json'
+            )
+
+            self.assertTrue(response.status_code == 201)
