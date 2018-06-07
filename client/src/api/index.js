@@ -64,7 +64,7 @@ export default {
             .then(json);
     },
     addTicketComment(message, ticket_id, email){
-        return fetch(`${HOST}/api/v1.0/tickets/${id}/comments/`, {
+        return fetch(`${HOST}/api/v1.0/tickets/${ticket_id}/comments/`, {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'

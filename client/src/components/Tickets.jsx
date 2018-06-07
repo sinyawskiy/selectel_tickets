@@ -1,16 +1,17 @@
 import React from 'react';
 import createClass from'create-react-class';
+import PropTypes from 'prop-types';
 import AppStore from '../stores/AppStore';
 import AppActions from '../actions/AppActions';
 import ListItem from "@material-ui/core/es/ListItem";
 import ListItemText from "@material-ui/core/es/ListItemText";
 import List from "@material-ui/core/es/List";
 import AppBar from '@material-ui/core/AppBar';
-import './Tickets.css';
 import Toolbar from "@material-ui/core/es/Toolbar/Toolbar";
 import Typography from "@material-ui/core/es/Typography/Typography";
 import IconButton from "@material-ui/core/es/IconButton/IconButton";
 import IconPlus from '@material-ui/icons/Add';
+import IconClose from '@material-ui/icons/Close';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -18,10 +19,14 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import ListItemSecondaryAction from "@material-ui/core/es/ListItemSecondaryAction/ListItemSecondaryAction";
-import CloseIcon from '@material-ui/icons/Close';
 
+
+import './Tickets.css';
 
 const Tickets = createClass({
+    contextTypes: {
+        router: PropTypes.object.isRequired
+    },
     getInitialState: function() {
         return {
             tickets: AppStore.getTicketsList(),
@@ -42,13 +47,7 @@ const Tickets = createClass({
     },
 
     openTicket(id){
-        console.log(id);
-    },
-
-    openDialog(){
-        this.setState({
-           showDialog: true
-        });
+        this.context.router.history.push(`/${id}`);
     },
 
     getTicketsByState(state){
@@ -62,25 +61,38 @@ const Tickets = createClass({
                             primary={title}
                             secondary={ticket.created_at}
                         />
-                        <ListItemSecondaryAction>
-                            <IconButton aria-label='Закрыть тикет' onClick={self.handleCloseTicket.bind(null, ticket.id)}>
-                                <CloseIcon />
-                            </IconButton>
-                        </ListItemSecondaryAction>
+                        { state !== 8 &&
+                            <ListItemSecondaryAction>
+                                <IconButton aria-label='Закрыть тикет'
+                                            onClick={self.handleCloseTicket.bind(null, ticket.id)}>
+                                    <IconClose/>
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                        }
                     </ListItem>
                 )
             }
         });
     },
 
-    handleCloseDialog(){
-        this.closeDialog();
+    handleCloseTicket(id){
+        AppActions.closeTicket({id});
+    },
+
+    openDialog(){
+        this.setState({
+            showDialog: true
+        });
     },
 
     closeDialog(){
         this.setState({
             showDialog: false
         });
+    },
+
+    handleCloseDialog(){
+        this.closeDialog();
     },
 
     handleSaveDialog(event){
@@ -92,10 +104,6 @@ const Tickets = createClass({
         this.closeDialog();
     },
 
-    handleCloseTicket(id){
-        AppActions.closeTicket({id});
-    },
-
     render: function() {
         return (
             <div>
@@ -104,9 +112,11 @@ const Tickets = createClass({
                         <Typography variant="subheading" color="inherit">
                             Список тикетов
                         </Typography>
-                        <IconButton className="add-ticket-button" color="inherit" aria-label="Создать тикет" onClick={this.openDialog}>
-                            <IconPlus />
-                        </IconButton>
+                        <ListItemSecondaryAction>
+                            <IconButton className="add-ticket-button" color="inherit" aria-label="Создать тикет" onClick={this.openDialog}>
+                                <IconPlus />
+                            </IconButton>
+                        </ListItemSecondaryAction>
                     </Toolbar>
                 </AppBar>
                 <div className="tickets-row">
@@ -156,6 +166,7 @@ const Tickets = createClass({
                                 label="Тема сообщения"
                                 margin="normal"
                                 inputRef={input => this.subject = input}
+                                fullWidth
                             />
                         </div>
                         <div>
@@ -165,6 +176,7 @@ const Tickets = createClass({
                                 margin="normal"
                                 multiline
                                 inputRef={input => this.message = input}
+                                fullWidth
                             />
                         </div>
                         <div>
@@ -174,6 +186,7 @@ const Tickets = createClass({
                                 label="Email"
                                 margin="normal"
                                 inputRef={input => this.email = input}
+                                fullWidth
                             />
                         </div>
                     </DialogContent>

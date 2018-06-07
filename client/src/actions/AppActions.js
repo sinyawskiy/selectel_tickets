@@ -54,7 +54,7 @@ const AppActions = {
             .then(data => {
                 AppDispatcher.dispatch({
                     type : AppConstants.GET_TICKET_COMMENTS_SUCCESS,
-                    item : data
+                    items : data.comments
                 });
             })
             .catch(err => {
@@ -65,7 +65,7 @@ const AppActions = {
             });
     },
     addTicketComment(params) {
-        api.addTicketComment(params.id)
+        api.addTicketComment(params.message, params.ticket_id, params.email)
             .then(data => {
                 AppDispatcher.dispatch({
                     type : AppConstants.ADD_COMMENT_SUCCESS,
@@ -82,9 +82,10 @@ const AppActions = {
     changeTicketState(params) {
         api.changeTicketState(params.id)
             .then(data => {
+                console.log(data);
                 AppDispatcher.dispatch({
                     type : AppConstants.CHANGE_TICKET_STATE_SUCCESS,
-                    item : data
+                    item : data[0].ticket
                 });
             })
             .catch(err => {

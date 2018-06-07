@@ -1,0 +1,64 @@
+.ticket{
+    padding: 20px;
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+
+.ticket--label,
+.ticket--subject,
+.ticket--message,
+.ticket--email,
+.ticket--created_at{
+    padding-bottom: 10px;
+    font-size: 19px;
+}
+
+.ticket--label{
+    padding-bottom: 0px;
+}
+
+.ticket--created_at{
+    text-align: right;
+}
+
+.label{
+    font-size: 12px;
+    color: gray;
+}
+
+.back-button{
+    margin-left: -15px !important;
+    margin-right: 10px !important;
+}
+
+.next-state-button{
+    margin-right: 10px !important;
+}
+
+.ticket-comments-item{
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    display: block !important;
+    border: 1px solid gray;
+    padding: 20px;
+    margin-top: 20px;
+    font-size: 17px;
+}
+
+.ticket-comments-item > .label{
+    font-size: 10px;
+}
+
+.ticket-comments-item--label,
+.ticket-comments-item--created_at,
+.ticket-comments-item--email,
+.ticket-comments-item--message{
+    display: block !important;
+    padding-bottom: 10px;
+}
+
+.ticket-comments-item--label{
+    padding-bottom: 0px;
+}
+
+.ticket-comments-item--created_at{
+    text-align: right;
+}

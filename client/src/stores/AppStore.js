@@ -4,11 +4,25 @@ import AppConstants from '../constants/AppConstants';
 
 const CHANGE_EVENT = 'change';
 let _ticketsList = [];
+let _ticketComments = [];
 let _error = null;
+let _ticket = {
+    id: 0,
+    subject: '',
+    message: '',
+    created_at: null,
+    email: ''
+};
 
 const AppStore = Object.assign({}, EventEmitter.prototype, {
     getTicketsList() {
-       return _ticketsList;
+        return _ticketsList;
+    },
+    getTicket(){
+        return _ticket;
+    },
+    getTicketCommentsList(){
+        return _ticketComments;
     },
     emitChange(){
         this.emit(CHANGE_EVENT);
@@ -36,9 +50,14 @@ AppDispatcher.register(action => {
            break;
        }
        case AppConstants.GET_TICKET_SUCCESS: {
+           _ticket = action.item;
+           AppStore.emitChange();
            break;
        }
        case AppConstants.GET_TICKET_FAIL: {
+           _ticket = null;
+           _error = action.error;
+           AppStore.emitChange();
            break;
        }
        case AppConstants.ADD_TICKET_SUCCESS: {
@@ -47,35 +66,50 @@ AppDispatcher.register(action => {
            break;
        }
        case AppConstants.ADD_TICKET_FAIL: {
+           _error = action.error;
+           AppStore.emitChange();
            break;
        }
        case AppConstants.ADD_COMMENT_SUCCESS: {
+           _ticketComments.push(action.item);
+           AppStore.emitChange();
            break;
        }
        case AppConstants.ADD_COMMENT_FAIL: {
+           _error = action.error;
+           AppStore.emitChange();
            break;
        }
        case AppConstants.GET_TICKET_COMMENTS_SUCCESS: {
+           _ticketComments = action.items;
+           AppStore.emitChange();
            break;
        }
        case AppConstants.GET_TICKET_COMMENTS_FAIL: {
+           _ticketComments = [];
+           _error = action.error;
+           AppStore.emitChange();
            break;
        }
        case AppConstants.CHANGE_TICKET_STATE_SUCCESS: {
+           _ticket = action.item;
+           AppStore.emitChange();
            break;
        }
        case AppConstants.CHANGE_TICKET_STATE_FAIL: {
+           _error = action.error;
+           AppStore.emitChange();
            break;
        }
        case AppConstants.CLOSE_TICKET_SUCCESS: {
            let ticket = action.item;
-           console.log(ticket);
            _ticketsList.find(x => x.id === ticket.id).state = ticket.state;
            AppStore.emitChange();
            break;
        }
        case AppConstants.CLOSE_TICKET_FAIL: {
-
+           _error = action.error;
+           AppStore.emitChange();
            break;
        }
        default: {

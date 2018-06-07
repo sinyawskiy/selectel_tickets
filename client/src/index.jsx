@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {HashRouter as Router, Route} from 'react-router-dom';
 import Tickets from './components/Tickets.jsx';
-// import Ticket from './components/Ticket.jsx';
+import Ticket from './components/Ticket.jsx';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 if (module.hot) {
@@ -14,7 +14,7 @@ const App = () => {
         <Router>
             <div>
                 <Route exact path='/' component={Tickets} />
-                {/*<Route path='/ticket/:ticketId' component={Ticket} />*/}
+                <Route path='/:ticketId' component={Ticket} />
             </div>
         </Router>
     );
