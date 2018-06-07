@@ -1,11 +1,13 @@
 from flask import jsonify, request, g, url_for
+from app.crossdomain import crossdomain
 from app.api_1_0.errors import not_found, ticket_closed
 from app.exceptions import ModelNotFound
 from app.models import Comment, Ticket, TicketState
 from . import api
 
 
-@api.route('/comments/')
+@api.route('/comments/', methods=['GET', 'OPTIONS'])
+@crossdomain(origin="*", headers=['Content-Type'])
 def get_comments():
     return jsonify({
         'comments': [comment.get_attrs() for comment in g.db.get_comments()],
@@ -13,7 +15,8 @@ def get_comments():
     })
 
 
-@api.route('/comments/<int:id>')
+@api.route('/comments/<int:id>', methods=['GET', 'OPTIONS'])
+@crossdomain(origin="*", headers=['Content-Type'])
 def get_comment(id):
     try:
         comment = g.db.get_comment(id)
@@ -23,7 +26,8 @@ def get_comment(id):
         return jsonify(comment.get_attrs())
 
 
-@api.route('/tickets/<int:id>/comments/')
+@api.route('/tickets/<int:id>/comments/', methods=['GET', 'OPTIONS'])
+@crossdomain(origin="*", headers=['Content-Type'])
 def get_ticket_comments(id):
     return jsonify({
         'comments': [comment.get_attrs() for comment in g.db.get_comments(id)],
@@ -31,7 +35,8 @@ def get_ticket_comments(id):
     })
 
 
-@api.route('/tickets/<int:id>/comments/', methods=['POST'])
+@api.route('/tickets/<int:id>/comments/', methods=['POST', 'OPTIONS'])
+@crossdomain(origin="*", headers=['Content-Type'])
 def new_ticket_comment(id):
     try:
         ticket = Ticket.from_db(g.db.get_ticket(id))
