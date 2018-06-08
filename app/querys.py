@@ -1,5 +1,9 @@
 from config import Config
 
+#
+# This code is put in a separate file to remove the warnings of the spelling checker in the PyCharm editor
+#
+
 CREATE_USER = '''
 CREATE ROLE {} LOGIN PASSWORD '{}' NOSUPERUSER NOCREATEROLE;
 '''.format(Config.DATABASE_USER, Config.DATABASE_PASSWORD)
